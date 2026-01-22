@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fourier NARDL - NARDL-Fourier</title>
+    <meta name="description"
+        content="Fourier NARDL model for capturing smooth structural breaks in asymmetric cointegration.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo">NF</div>
+            <span class="nav-title">NARDL-Fourier</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li><a href="nardl.html">NARDL</a></li>
+            <li><a href="fourier-nardl.html" class="active">Fourier NARDL</a></li>
+            <li><a href="bootstrap-nardl.html">Bootstrap NARDL</a></li>
+            <li><a href="api-reference.html">API</a></li>
+            <li><a href="https://github.com/merwanroudane/fnardl" target="_blank">GitHub ↗</a></li>
+        </ul>
+    </nav>
+
+    <!-- Documentation Layout -->
+    <div class="doc-layout">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h4>Fourier NARDL</h4>
+                <ul class="sidebar-links">
+                    <li><a href="#overview" class="active">Overview</a></li>
+                    <li><a href="#theory">Theoretical Background</a></li>
+                    <li><a href="#fourier">Fourier Approximation</a></li>
+                    <li><a href="#specification">Model Specification</a></li>
+                    <li><a href="#usage">Basic Usage</a></li>
+                    <li><a href="#frequency">Optimal Frequency</a></li>
+                    <li><a href="#significance">Fourier Significance Test</a></li>
+                    <li><a href="#example">Complete Example</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Related</h4>
+                <ul class="sidebar-links">
+                    <li><a href="nardl.html">← Standard NARDL</a></li>
+                    <li><a href="bootstrap-nardl.html">→ Bootstrap NARDL</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="doc-content">
+            <h1>Fourier NARDL Model</h1>
+            <p>
+                The Fourier NARDL extends the standard NARDL framework by incorporating Fourier trigonometric
+                terms to capture <strong>smooth structural breaks</strong> without specifying break dates.
+                Based on <strong>Zaghdoudi, Maktouf & Ochi (2023)</strong>.
+            </p>
+
+            <h2 id="overview">Overview</h2>
+            <p>
+                Traditional structural break tests require specifying break dates a priori or rely on
+                multiple regime-switching models. The Fourier approach offers an elegant alternative by
+                using trigonometric functions to approximate unknown structural changes smoothly.
+            </p>
+
+            <div class="callout callout-info">
+                <div class="callout-icon">🌊</div>
+                <div>
+                    <div class="callout-title">Why Fourier?</div>
+                    <p>A Fourier expansion can approximate any bounded periodic function, making it ideal for modeling
+                        gradual structural changes, policy shifts, or slowly evolving institutional factors.</p>
+                </div>
+            </div>
+
+            <h2 id="theory">Theoretical Background</h2>
+            <p>
+                The Fourier approach to structural breaks was pioneered by Becker, Enders & Lee (2006)
+                and later applied to cointegration analysis. The key insight is that any smooth function
+                can be approximated by a Fourier series:
+            </p>
+
+            <div class="math-block">
+                \[\alpha(t) = \alpha_0 + \sum_{k=1}^{n} \left[ \gamma_k \sin\left(\frac{2\pi k t}{T}\right) + \delta_k
+                \cos\left(\frac{2\pi k t}{T}\right) \right]\]
+            </div>
+
+            <p>
+                In practice, a single frequency (k=1, 2, or 3) is typically sufficient to capture most
+                structural variations, keeping the model parsimonious.
+            </p>
+
+            <h2 id="fourier">Fourier Approximation</h2>
+            <p>
+                For a sample of size T, we construct trigonometric terms at frequency \(k\):
+            </p>
+
+            <div class="math-block">
+                \[\text{sin}_k(t) = \sin\left(\frac{2\pi k t}{T}\right)\]
+                \[\text{cos}_k(t) = \cos\left(\frac{2\pi k t}{T}\right)\]
+            </div>
+
+            <p>
+                The frequency \(k\) controls the periodicity of the breaks:
+            </p>
+            <ul>
+                <li>\(k = 1\): One complete cycle over the sample (gradual, single break)</li>
+                <li>\(k = 2\): Two complete cycles (two potential break periods)</li>
+                <li>\(k = 3\): Three complete cycles (multiple gradual changes)</li>
+            </ul>
+
+            <h2 id="specification">Model Specification</h2>
+            <p>The Fourier NARDL model augments the standard NARDL with Fourier terms:</p>
+
+            <div class="math-block">
+                \[\Delta y_t = \rho y_{t-1} + \theta^+ x_{t-1}^+ + \theta^- x_{t-1}^- + \gamma \sin\left(\frac{2\pi k
+                t}{T}\right) + \delta \cos\left(\frac{2\pi k t}{T}\right) + \ldots + \varepsilon_t\]
+            </div>
+
+            <p>
+                The Fourier terms (\(\gamma, \delta\)) capture time-varying intercepts (and potentially
+                time-varying coefficients) that would otherwise bias the estimates if structural
+                breaks are ignored.
+            </p>
+
+            <h2 id="usage">Basic Usage</h2>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> FourierNARDL
+
+<span class="token comment"># Fit Fourier NARDL model</span>
+model <span class="token operator">=</span> <span class="token class-name">FourierNARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    max_freq<span class="token operator">=</span><span class="token number">3</span>,          <span class="token comment"># Maximum Fourier frequency to try</span>
+    ic<span class="token operator">=</span><span class="token string">'AIC'</span>,
+    case<span class="token operator">=</span><span class="token number">3</span>
+)
+
+<span class="token comment"># View optimal frequency</span>
+<span class="token function">print</span>(<span class="token string">f"Optimal Fourier frequency: k* = </span>{model.best_freq}<span class="token string">"</span>)
+
+<span class="token comment"># Full summary</span>
+<span class="token function">print</span>(model.<span class="token function">summary</span>())</code>
+            </pre>
+
+            <h3>Additional Parameters</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>max_freq</code></td>
+                            <td>int</td>
+                            <td>Maximum Fourier frequency to test (default: 3)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                All other parameters are inherited from the standard NARDL class.
+            </p>
+
+            <h2 id="frequency">Optimal Frequency Selection</h2>
+            <p>
+                The optimal frequency \(k^*\) is selected automatically using the information criterion
+                specified (AIC, BIC, or HQIC). The model estimates all frequencies from 1 to <code>max_freq</code>
+                and selects the one that minimizes the criterion.
+            </p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token comment"># Access optimal frequency and IC value</span>
+<span class="token function">print</span>(<span class="token string">f"Optimal frequency: k* = </span>{model.best_freq}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"Best {model.ic}: </span>{model.best_ic:.4f}<span class="token string">"</span>)
+
+<span class="token comment"># The Fourier terms in the model</span>
+<span class="token function">print</span>(<span class="token string">"\\nFourier Terms Coefficients:"</span>)
+<span class="token keyword">for</span> name <span class="token keyword">in</span> model.model.params.index:
+    <span class="token keyword">if</span> <span class="token string">'sin'</span> <span class="token keyword">in</span> name <span class="token keyword">or</span> <span class="token string">'cos'</span> <span class="token keyword">in</span> name:
+        <span class="token function">print</span>(<span class="token string">f"  </span>{name}<span class="token string">: </span>{model.model.params[name]:.6f}<span class="token string">"</span>)</code>
+            </pre>
+
+            <h2 id="significance">Fourier Terms Significance Test</h2>
+            <p>
+                To verify that the Fourier terms add explanatory power, we test the joint significance
+                of the sine and cosine terms:
+            </p>
+
+            <div class="math-block">
+                \[H_0: \gamma = \delta = 0 \quad \text{(no structural breaks)}\]
+            </div>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token comment"># Access Fourier significance test</span>
+<span class="token keyword">if</span> <span class="token function">hasattr</span>(model, <span class="token string">'fourier_test'</span>) <span class="token keyword">and</span> model.fourier_test:
+    ft <span class="token operator">=</span> model.fourier_test
+    <span class="token function">print</span>(<span class="token string">"Fourier Terms Joint Significance Test:"</span>)
+    <span class="token function">print</span>(<span class="token string">f"  H₀: γ = δ = 0"</span>)
+    <span class="token function">print</span>(<span class="token string">f"  F-statistic: </span>{ft[<span class="token string">'f_statistic'</span>]:.4f}<span class="token string">"</span>)
+    <span class="token function">print</span>(<span class="token string">f"  p-value: </span>{ft[<span class="token string">'p_value'</span>]:.4f}<span class="token string">"</span>)
+    <span class="token function">print</span>(<span class="token string">f"  Significant: </span>{ft[<span class="token string">'significant'</span>]}<span class="token string">"</span>)</code>
+            </pre>
+
+            <div class="callout callout-warning">
+                <div class="callout-icon">⚠️</div>
+                <div>
+                    <div class="callout-title">Interpretation</div>
+                    <p>If the Fourier terms are not significant (high p-value), structural breaks may not be present,
+                        and the standard NARDL may be sufficient.</p>
+                </div>
+            </div>
+
+            <h2 id="example">Complete Example</h2>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+<span class="token keyword">import</span> numpy <span class="token keyword">as</span> np
+<span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> FourierNARDL, ResultsTable
+
+<span class="token comment"># Simulate data with structural break</span>
+np.random.<span class="token function">seed</span>(<span class="token number">42</span>)
+n <span class="token operator">=</span> <span class="token number">200</span>
+t <span class="token operator">=</span> np.<span class="token function">arange</span>(n)
+
+<span class="token comment"># Create a smooth structural shift</span>
+shift <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">*</span> np.<span class="token function">sin</span>(<span class="token number">2</span> <span class="token operator">*</span> np.pi <span class="token operator">*</span> t / n)
+
+df <span class="token operator">=</span> pd.<span class="token class-name">DataFrame</span>({
+    <span class="token string">'coal'</span>: shift <span class="token operator">+</span> np.<span class="token function">cumsum</span>(np.random.<span class="token function">randn</span>(n) <span class="token operator">*</span> <span class="token number">0.5</span>),
+    <span class="token string">'oil_price'</span>: np.<span class="token function">cumsum</span>(np.random.<span class="token function">randn</span>(n)),
+    <span class="token string">'gdp'</span>: np.<span class="token function">cumsum</span>(np.random.<span class="token function">randn</span>(n))
+})
+
+<span class="token comment"># Fit Fourier NARDL</span>
+model <span class="token operator">=</span> <span class="token class-name">FourierNARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    max_freq<span class="token operator">=</span><span class="token number">3</span>,
+    ic<span class="token operator">=</span><span class="token string">'AIC'</span>
+)
+
+<span class="token comment"># Summary</span>
+<span class="token function">print</span>(model.<span class="token function">summary</span>())
+
+<span class="token comment"># Compare with standard NARDL</span>
+<span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> NARDL
+
+standard_model <span class="token operator">=</span> <span class="token class-name">NARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    ic<span class="token operator">=</span><span class="token string">'AIC'</span>
+)
+
+<span class="token function">print</span>(<span class="token string">"\\nModel Comparison:"</span>)
+<span class="token function">print</span>(<span class="token string">f"  Standard NARDL R²: </span>{standard_model.model.rsquared:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  Fourier NARDL R²:  </span>{model.model.rsquared:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  Improvement:       </span>{(model.model.rsquared - standard_model.model.rsquared)*100:.2f}<span class="token string">%"</span>)</code>
+            </pre>
+
+            <div class="callout callout-success">
+                <div class="callout-icon">🚀</div>
+                <div>
+                    <div class="callout-title">Next: Bootstrap Tests</div>
+                    <p>To eliminate the inconclusive zone problem in bounds tests, check out the <a
+                            href="bootstrap-nardl.html" style="color: var(--accent-green);">Bootstrap Fourier NARDL</a>
+                        which combines Fourier approximation with bootstrap-based inference.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-left: 280px;">
+        <div class="footer-bottom" style="max-width: 100%; padding: 2rem;">
+            <span>© 2024 NARDL-Fourier. MIT License.</span>
+            <span>Made with ❤️ by <a href="https://github.com/merwanroudane">Dr. Merwan Roudane</a></span>
+        </div>
+    </footer>
+</body>
+
+</html>

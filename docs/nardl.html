@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NARDL Model - NARDL-Fourier</title>
+    <meta name="description"
+        content="Complete guide to the Nonlinear ARDL model based on Shin, Yu & Greenwood-Nimmo (2014).">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo">NF</div>
+            <span class="nav-title">NARDL-Fourier</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li><a href="nardl.html" class="active">NARDL</a></li>
+            <li><a href="fourier-nardl.html">Fourier NARDL</a></li>
+            <li><a href="bootstrap-nardl.html">Bootstrap NARDL</a></li>
+            <li><a href="api-reference.html">API</a></li>
+            <li><a href="https://github.com/merwanroudane/fnardl" target="_blank">GitHub ↗</a></li>
+        </ul>
+    </nav>
+
+    <!-- Documentation Layout -->
+    <div class="doc-layout">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h4>NARDL Model</h4>
+                <ul class="sidebar-links">
+                    <li><a href="#overview" class="active">Overview</a></li>
+                    <li><a href="#theory">Theoretical Framework</a></li>
+                    <li><a href="#specification">Model Specification</a></li>
+                    <li><a href="#usage">Basic Usage</a></li>
+                    <li><a href="#decomposition">Partial Sum Decomposition</a></li>
+                    <li><a href="#long-run">Long-Run Multipliers</a></li>
+                    <li><a href="#short-run">Short-Run Dynamics</a></li>
+                    <li><a href="#bounds-test">Bounds Test</a></li>
+                    <li><a href="#asymmetry">Asymmetry Tests</a></li>
+                    <li><a href="#example">Complete Example</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Related</h4>
+                <ul class="sidebar-links">
+                    <li><a href="fourier-nardl.html">→ Fourier NARDL</a></li>
+                    <li><a href="bootstrap-nardl.html">→ Bootstrap NARDL</a></li>
+                    <li><a href="api-reference.html">→ API Reference</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="doc-content">
+            <h1>NARDL Model</h1>
+            <p>
+                The Nonlinear Autoregressive Distributed Lag (NARDL) model extends the linear ARDL framework
+                to capture asymmetric effects in cointegrating relationships. Based on the seminal work of
+                <strong>Shin, Yu & Greenwood-Nimmo (2014)</strong>.
+            </p>
+
+            <h2 id="overview">Overview</h2>
+            <p>
+                Traditional cointegration analysis assumes symmetric adjustments to equilibrium. However,
+                many economic relationships exhibit asymmetry—variables may respond differently to positive
+                versus negative changes. The NARDL model addresses this by decomposing regressors into
+                partial sums of positive and negative changes.
+            </p>
+
+            <div class="callout callout-info">
+                <div class="callout-icon">📊</div>
+                <div>
+                    <div class="callout-title">Key Features</div>
+                    <p>NARDL allows testing for both short-run and long-run asymmetric effects while maintaining the
+                        advantages of the ARDL bounds testing approach for variables with mixed integration orders
+                        I(0)/I(1).</p>
+                </div>
+            </div>
+
+            <h2 id="theory">Theoretical Framework</h2>
+            <p>
+                The NARDL approach rests on the concept of asymmetric cointegration. Consider a long-run
+                relationship between \(y_t\) and \(x_t\):
+            </p>
+
+            <div class="math-block">
+                \[y_t = \beta^+ x_t^+ + \beta^- x_t^- + u_t\]
+            </div>
+
+            <p>
+                where \(x_t^+\) and \(x_t^-\) are partial sum processes of positive and negative changes in \(x_t\):
+            </p>
+
+            <div class="math-block">
+                \[x_t^+ = \sum_{j=1}^{t} \Delta x_j^+ = \sum_{j=1}^{t} \max(\Delta x_j, 0)\]
+                \[x_t^- = \sum_{j=1}^{t} \Delta x_j^- = \sum_{j=1}^{t} \min(\Delta x_j, 0)\]
+            </div>
+
+            <h2 id="specification">Model Specification</h2>
+            <p>The NARDL(p,q) error correction model is specified as:</p>
+
+            <div class="math-block">
+                \[\Delta y_t = \rho y_{t-1} + \theta^+ x_{t-1}^+ + \theta^- x_{t-1}^- + \sum_{j=1}^{p-1} \gamma_j \Delta
+                y_{t-j} + \sum_{j=0}^{q} (\pi_j^+ \Delta x_{t-j}^+ + \pi_j^- \Delta x_{t-j}^-) + \varepsilon_t\]
+            </div>
+
+            <p>Where:</p>
+            <ul>
+                <li>\(\rho\) is the error correction coefficient (expected to be negative)</li>
+                <li>\(\theta^+, \theta^-\) capture the level (long-run) effects</li>
+                <li>\(\pi_j^+, \pi_j^-\) capture the short-run dynamic effects</li>
+                <li>Long-run multipliers: \(L^+ = -\theta^+ / \rho\) and \(L^- = -\theta^- / \rho\)</li>
+            </ul>
+
+            <h2 id="usage">Basic Usage</h2>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> NARDL
+<span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+
+<span class="token comment"># Load your data</span>
+df <span class="token operator">=</span> pd.<span class="token function">read_csv</span>(<span class="token string">'data.csv'</span>, index_col<span class="token operator">=</span><span class="token number">0</span>, parse_dates<span class="token operator">=</span><span class="token keyword">True</span>)
+
+<span class="token comment"># Fit NARDL model</span>
+model <span class="token operator">=</span> <span class="token class-name">NARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal'</span>,              <span class="token comment"># Dependent variable</span>
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>, <span class="token string">'gdp2'</span>],   <span class="token comment"># Control variables (linear)</span>
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],  <span class="token comment"># Variables to decompose (asymmetric)</span>
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,                   <span class="token comment"># Maximum lag order</span>
+    ic<span class="token operator">=</span><span class="token string">'AIC'</span>,                   <span class="token comment"># Information criterion</span>
+    case<span class="token operator">=</span><span class="token number">3</span>                      <span class="token comment"># Case for bounds test</span>
+)
+
+<span class="token comment"># View summary</span>
+<span class="token function">print</span>(model.<span class="token function">summary</span>())</code>
+            </pre>
+
+            <h3>Parameters Explained</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>data</code></td>
+                            <td>DataFrame</td>
+                            <td>Pandas DataFrame with time series data</td>
+                        </tr>
+                        <tr>
+                            <td><code>depvar</code></td>
+                            <td>str</td>
+                            <td>Name of the dependent variable column</td>
+                        </tr>
+                        <tr>
+                            <td><code>exog_vars</code></td>
+                            <td>list</td>
+                            <td>List of exogenous/control variable names (enter linearly)</td>
+                        </tr>
+                        <tr>
+                            <td><code>decomp_vars</code></td>
+                            <td>list</td>
+                            <td>Variables to decompose into positive/negative components</td>
+                        </tr>
+                        <tr>
+                            <td><code>maxlag</code></td>
+                            <td>int</td>
+                            <td>Maximum lag order to consider (default: 4)</td>
+                        </tr>
+                        <tr>
+                            <td><code>ic</code></td>
+                            <td>str</td>
+                            <td>Information criterion: 'AIC', 'BIC', or 'HQIC'</td>
+                        </tr>
+                        <tr>
+                            <td><code>case</code></td>
+                            <td>int</td>
+                            <td>Bounds test case (1-5, default: 3)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="decomposition">Partial Sum Decomposition</h2>
+            <p>
+                The core of NARDL is the partial sum decomposition. For any variable \(x\), we compute:
+            </p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">from</span> nardl_fourier.utils <span class="token keyword">import</span> partial_sum_decomposition
+
+<span class="token comment"># Decompose a variable</span>
+x_positive, x_negative <span class="token operator">=</span> <span class="token function">partial_sum_decomposition</span>(df[<span class="token string">'oil_price'</span>])
+
+<span class="token comment"># x_positive: cumulative sum of positive changes</span>
+<span class="token comment"># x_negative: cumulative sum of negative changes</span>
+<span class="token function">print</span>(<span class="token string">f"Final positive sum: </span>{x_positive[-1]:.2f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"Final negative sum: </span>{x_negative[-1]:.2f}<span class="token string">"</span>)</code>
+            </pre>
+
+            <h2 id="long-run">Long-Run Multipliers</h2>
+            <p>
+                Long-run multipliers measure the cumulative impact of a unit change in \(x\) on \(y\):
+            </p>
+
+            <div class="math-block">
+                \[L^+ = -\frac{\theta^+}{\rho} \quad \text{and} \quad L^- = -\frac{\theta^-}{\rho}\]
+            </div>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token comment"># Access long-run multipliers</span>
+lr <span class="token operator">=</span> model.long_run[<span class="token string">'oil_price'</span>]
+
+<span class="token function">print</span>(<span class="token string">"Long-Run Multipliers:"</span>)
+<span class="token function">print</span>(<span class="token string">f"  L⁺ (positive): </span>{lr[<span class="token string">'positive'</span>][<span class="token string">'coefficient'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"     Std.Error:  </span>{lr[<span class="token string">'positive'</span>][<span class="token string">'std_error'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"     p-value:    </span>{lr[<span class="token string">'positive'</span>][<span class="token string">'p_value'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  L⁻ (negative): </span>{lr[<span class="token string">'negative'</span>][<span class="token string">'coefficient'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"     Std.Error:  </span>{lr[<span class="token string">'negative'</span>][<span class="token string">'std_error'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"     p-value:    </span>{lr[<span class="token string">'negative'</span>][<span class="token string">'p_value'</span>]:.4f}<span class="token string">"</span>)</code>
+            </pre>
+
+            <h2 id="short-run">Short-Run Dynamics</h2>
+            <p>
+                Short-run coefficients capture the immediate dynamic adjustments:
+            </p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token comment"># Error Correction Term</span>
+ect <span class="token operator">=</span> model.ect
+<span class="token function">print</span>(<span class="token string">f"ECT (ρ): </span>{ect[<span class="token string">'coefficient'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"Half-life: </span>{ect[<span class="token string">'half_life'</span>]:.2f}<span class="token string"> periods"</span>)
+
+<span class="token comment"># Short-run coefficients table</span>
+<span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> ResultsTable
+table <span class="token operator">=</span> <span class="token class-name">ResultsTable</span>(model)
+sr_df <span class="token operator">=</span> table.<span class="token function">short_run_table</span>()
+<span class="token function">print</span>(sr_df)</code>
+            </pre>
+
+            <div class="callout callout-warning">
+                <div class="callout-icon">⚠️</div>
+                <div>
+                    <div class="callout-title">ECT Validity</div>
+                    <p>The error correction term (ρ) should be negative and significant. If ρ ≥ 0 or |ρ| > 2, the model
+                        may be unstable.</p>
+                </div>
+            </div>
+
+            <h2 id="bounds-test">Bounds Test for Cointegration</h2>
+            <p>
+                The PSS bounds test examines whether a long-run relationship exists:
+            </p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token comment"># Access bounds test results</span>
+bt <span class="token operator">=</span> model.bounds_test
+
+<span class="token function">print</span>(<span class="token string">"PSS Bounds Test:"</span>)
+<span class="token function">print</span>(<span class="token string">f"  F-statistic: </span>{bt[<span class="token string">'f_statistic'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  Critical Values (5%):"</span>)
+<span class="token function">print</span>(<span class="token string">f"    I(0): </span>{bt[<span class="token string">'critical_values'</span>][<span class="token string">'F'</span>][<span class="token string">'5%'</span>][<span class="token string">'I(0)'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"    I(1): </span>{bt[<span class="token string">'critical_values'</span>][<span class="token string">'F'</span>][<span class="token string">'5%'</span>][<span class="token string">'I(1)'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  Decision: </span>{bt[<span class="token string">'decision'</span>][<span class="token string">'F_5%'</span>]}<span class="token string">"</span>)</code>
+            </pre>
+
+            <h3>Interpretation</h3>
+            <ul>
+                <li><strong>F > I(1) bound:</strong> Reject H₀ → Evidence of cointegration</li>
+                <li><strong>F < I(0) bound:</strong> Fail to reject H₀ → No cointegration</li>
+                <li><strong>I(0) < F < I(1):</strong> Inconclusive (consider Bootstrap NARDL)</li>
+            </ul>
+
+            <h2 id="asymmetry">Testing for Asymmetry</h2>
+            <p>
+                Wald tests formally examine whether positive and negative effects are statistically different:
+            </p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token comment"># Access Wald test results</span>
+wald <span class="token operator">=</span> model.wald[<span class="token string">'oil_price'</span>]
+
+<span class="token comment"># Short-run asymmetry</span>
+<span class="token function">print</span>(<span class="token string">"Short-Run Asymmetry Test:"</span>)
+<span class="token function">print</span>(<span class="token string">f"  H₀: π⁺ = π⁻ at all lags"</span>)
+<span class="token function">print</span>(<span class="token string">f"  F-statistic: </span>{wald[<span class="token string">'short_run'</span>][<span class="token string">'f_statistic'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  p-value: </span>{wald[<span class="token string">'short_run'</span>][<span class="token string">'p_value'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  Asymmetric: </span>{wald[<span class="token string">'short_run'</span>][<span class="token string">'asymmetric'</span>]}<span class="token string">"</span>)
+
+<span class="token comment"># Long-run asymmetry</span>
+<span class="token function">print</span>(<span class="token string">"\\nLong-Run Asymmetry Test:"</span>)
+<span class="token function">print</span>(<span class="token string">f"  H₀: L⁺ = L⁻"</span>)
+<span class="token function">print</span>(<span class="token string">f"  F-statistic: </span>{wald[<span class="token string">'long_run'</span>][<span class="token string">'f_statistic'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  p-value: </span>{wald[<span class="token string">'long_run'</span>][<span class="token string">'p_value'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  Asymmetric: </span>{wald[<span class="token string">'long_run'</span>][<span class="token string">'asymmetric'</span>]}<span class="token string">"</span>)</code>
+            </pre>
+
+            <h2 id="example">Complete Example</h2>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+<span class="token keyword">import</span> numpy <span class="token keyword">as</span> np
+<span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> NARDL, ResultsTable, NARDLPlots
+
+<span class="token comment"># Create sample data</span>
+np.random.<span class="token function">seed</span>(<span class="token number">42</span>)
+n <span class="token operator">=</span> <span class="token number">200</span>
+df <span class="token operator">=</span> pd.<span class="token class-name">DataFrame</span>({
+    <span class="token string">'coal'</span>: np.<span class="token function">cumsum</span>(np.random.<span class="token function">randn</span>(n)),
+    <span class="token string">'oil_price'</span>: np.<span class="token function">cumsum</span>(np.random.<span class="token function">randn</span>(n)),
+    <span class="token string">'gdp'</span>: np.<span class="token function">cumsum</span>(np.random.<span class="token function">randn</span>(n))
+})
+
+<span class="token comment"># Fit NARDL model</span>
+model <span class="token operator">=</span> <span class="token class-name">NARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    ic<span class="token operator">=</span><span class="token string">'AIC'</span>
+)
+
+<span class="token comment"># Print full summary</span>
+<span class="token function">print</span>(model.<span class="token function">summary</span>())
+
+<span class="token comment"># Generate publication tables</span>
+table <span class="token operator">=</span> <span class="token class-name">ResultsTable</span>(model)
+<span class="token function">print</span>(<span class="token string">"\\nLong-Run Multipliers:"</span>)
+<span class="token function">print</span>(table.<span class="token function">long_run_table</span>())
+
+<span class="token function">print</span>(<span class="token string">"\\nDiagnostics:"</span>)
+<span class="token function">print</span>(table.<span class="token function">diagnostics_table</span>())
+
+<span class="token comment"># Export to LaTeX</span>
+table.<span class="token function">to_latex</span>(<span class="token string">'nardl_results.tex'</span>)
+
+<span class="token comment"># Create plots</span>
+plots <span class="token operator">=</span> <span class="token class-name">NARDLPlots</span>(model)
+plots.<span class="token function">dynamic_multipliers</span>(<span class="token string">'oil_price'</span>, horizon<span class="token operator">=</span><span class="token number">20</span>)
+plots.<span class="token function">cusum</span>()</code>
+            </pre>
+
+            <div class="callout callout-success">
+                <div class="callout-icon">🎉</div>
+                <div>
+                    <div class="callout-title">Next Steps</div>
+                    <p>For handling structural breaks, see <a href="fourier-nardl.html"
+                            style="color: var(--accent-green);">Fourier NARDL</a>. For eliminating inconclusive bounds
+                        test results, see <a href="bootstrap-nardl.html" style="color: var(--accent-green);">Bootstrap
+                            NARDL</a>.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-left: 280px;">
+        <div class="footer-bottom" style="max-width: 100%; padding: 2rem;">
+            <span>© 2024 NARDL-Fourier. MIT License.</span>
+            <span>Made with ❤️ by <a href="https://github.com/merwanroudane">Dr. Merwan Roudane</a></span>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - NARDL-Fourier</title>
+    <meta name="description" content="Complete API reference for the NARDL-Fourier Python library.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo">NF</div>
+            <span class="nav-title">NARDL-Fourier</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li><a href="nardl.html">NARDL</a></li>
+            <li><a href="fourier-nardl.html">Fourier NARDL</a></li>
+            <li><a href="bootstrap-nardl.html">Bootstrap NARDL</a></li>
+            <li><a href="api-reference.html" class="active">API</a></li>
+            <li><a href="https://github.com/merwanroudane/fnardl" target="_blank">GitHub ↗</a></li>
+        </ul>
+    </nav>
+
+    <!-- Documentation Layout -->
+    <div class="doc-layout">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h4>Core Classes</h4>
+                <ul class="sidebar-links">
+                    <li><a href="#nardl-class" class="active">NARDL</a></li>
+                    <li><a href="#fourier-nardl-class">FourierNARDL</a></li>
+                    <li><a href="#bootstrap-nardl-class">BootstrapNARDL</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Bounds Tests</h4>
+                <ul class="sidebar-links">
+                    <li><a href="#pss-bounds">PSSBoundsTest</a></li>
+                    <li><a href="#bootstrap-coint">BootstrapCointegrationTest</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Output</h4>
+                <ul class="sidebar-links">
+                    <li><a href="#results-table">ResultsTable</a></li>
+                    <li><a href="#nardl-plots">NARDLPlots</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Utilities</h4>
+                <ul class="sidebar-links">
+                    <li><a href="#utilities">Utility Functions</a></li>
+                    <li><a href="#diagnostics">Diagnostics</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="doc-content">
+            <h1>API Reference</h1>
+            <p>
+                Complete API documentation for all classes and functions in the NARDL-Fourier library.
+            </p>
+
+            <!-- NARDL Class -->
+            <h2 id="nardl-class">NARDL</h2>
+            <p>Standard Nonlinear ARDL model (Shin, Yu & Greenwood-Nimmo, 2014).</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">class</span> <span class="token class-name">NARDL</span>(data, depvar, exog_vars, decomp_vars, maxlag=<span class="token number">4</span>, ic=<span class="token string">'AIC'</span>, case=<span class="token number">3</span>)</code>
+            </pre>
+
+            <h3>Parameters</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>data</code></td>
+                            <td>pd.DataFrame</td>
+                            <td>Time series data</td>
+                        </tr>
+                        <tr>
+                            <td><code>depvar</code></td>
+                            <td>str</td>
+                            <td>Dependent variable name</td>
+                        </tr>
+                        <tr>
+                            <td><code>exog_vars</code></td>
+                            <td>list</td>
+                            <td>Exogenous/control variables (linear)</td>
+                        </tr>
+                        <tr>
+                            <td><code>decomp_vars</code></td>
+                            <td>list</td>
+                            <td>Variables to decompose (asymmetric)</td>
+                        </tr>
+                        <tr>
+                            <td><code>maxlag</code></td>
+                            <td>int</td>
+                            <td>Maximum lag order (default: 4)</td>
+                        </tr>
+                        <tr>
+                            <td><code>ic</code></td>
+                            <td>str</td>
+                            <td>Information criterion: 'AIC', 'BIC', 'HQIC'</td>
+                        </tr>
+                        <tr>
+                            <td><code>case</code></td>
+                            <td>int</td>
+                            <td>Bounds test case (1-5, default: 3)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Attributes</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>model</code></td>
+                            <td>OLSResults</td>
+                            <td>Fitted statsmodels OLS model</td>
+                        </tr>
+                        <tr>
+                            <td><code>best_lags</code></td>
+                            <td>dict</td>
+                            <td>Optimal lag structure {p, q, r}</td>
+                        </tr>
+                        <tr>
+                            <td><code>best_ic</code></td>
+                            <td>float</td>
+                            <td>Best IC value</td>
+                        </tr>
+                        <tr>
+                            <td><code>long_run</code></td>
+                            <td>dict</td>
+                            <td>Long-run multipliers per variable</td>
+                        </tr>
+                        <tr>
+                            <td><code>short_run</code></td>
+                            <td>dict</td>
+                            <td>Short-run coefficients</td>
+                        </tr>
+                        <tr>
+                            <td><code>ect</code></td>
+                            <td>dict</td>
+                            <td>Error correction term info</td>
+                        </tr>
+                        <tr>
+                            <td><code>bounds_test</code></td>
+                            <td>dict</td>
+                            <td>PSS bounds test results</td>
+                        </tr>
+                        <tr>
+                            <td><code>wald</code></td>
+                            <td>dict</td>
+                            <td>Wald asymmetry tests</td>
+                        </tr>
+                        <tr>
+                            <td><code>diagnostics</code></td>
+                            <td>dict</td>
+                            <td>Diagnostic test results</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Methods</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Returns</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>summary()</code></td>
+                            <td>str</td>
+                            <td>Full model summary</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- FourierNARDL Class -->
+            <h2 id="fourier-nardl-class">FourierNARDL</h2>
+            <p>Fourier NARDL with smooth structural breaks (Zaghdoudi et al., 2023).</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">class</span> <span class="token class-name">FourierNARDL</span>(data, depvar, exog_vars, decomp_vars, maxlag=<span class="token number">4</span>, max_freq=<span class="token number">3</span>, ic=<span class="token string">'AIC'</span>, case=<span class="token number">3</span>)</code>
+            </pre>
+
+            <h3>Additional Parameters</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>max_freq</code></td>
+                            <td>int</td>
+                            <td>Maximum Fourier frequency to test (default: 3)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Additional Attributes</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>best_freq</code></td>
+                            <td>float</td>
+                            <td>Optimal Fourier frequency k*</td>
+                        </tr>
+                        <tr>
+                            <td><code>fourier_test</code></td>
+                            <td>dict</td>
+                            <td>Joint significance test for sin/cos terms</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- BootstrapNARDL Class -->
+            <h2 id="bootstrap-nardl-class">BootstrapNARDL</h2>
+            <p>Bootstrap Fourier NARDL with bootstrap cointegration tests (Bertelli et al., 2022).</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">class</span> <span class="token class-name">BootstrapNARDL</span>(data, depvar, exog_vars, decomp_vars, maxlag=<span class="token number">4</span>, max_freq=<span class="token number">3</span>,
+                     ic=<span class="token string">'AIC'</span>, case=<span class="token number">3</span>, n_bootstrap=<span class="token number">1000</span>, bootstrap_case=<span class="token string">'III'</span>,
+                     random_state=<span class="token number">42</span>)</code>
+            </pre>
+
+            <h3>Additional Parameters</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>n_bootstrap</code></td>
+                            <td>int</td>
+                            <td>Number of bootstrap replications (default: 1000)</td>
+                        </tr>
+                        <tr>
+                            <td><code>bootstrap_case</code></td>
+                            <td>str</td>
+                            <td>Case: 'II' or 'III' (default: 'III')</td>
+                        </tr>
+                        <tr>
+                            <td><code>random_state</code></td>
+                            <td>int</td>
+                            <td>Random seed for reproducibility</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Additional Attributes</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>bootstrap_test</code></td>
+                            <td>BootstrapCointegrationTest</td>
+                            <td>Bootstrap test object</td>
+                        </tr>
+                        <tr>
+                            <td><code>bootstrap_results</code></td>
+                            <td>dict</td>
+                            <td>Bootstrap test results</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Additional Methods</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Returns</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>cointegration_decision()</code></td>
+                            <td>str</td>
+                            <td>Decision with interpretation</td>
+                        </tr>
+                        <tr>
+                            <td><code>plot_bootstrap_distributions(figsize)</code></td>
+                            <td>Figure</td>
+                            <td>Bootstrap distribution plots</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PSSBoundsTest -->
+            <h2 id="pss-bounds">PSSBoundsTest</h2>
+            <p>PSS Bounds Test for cointegration.</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">class</span> <span class="token class-name">PSSBoundsTest</span>(model, k, case=<span class="token number">3</span>)</code>
+            </pre>
+
+            <h3>Parameters</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>model</code></td>
+                            <td>OLSResults</td>
+                            <td>Fitted NARDL model</td>
+                        </tr>
+                        <tr>
+                            <td><code>k</code></td>
+                            <td>int</td>
+                            <td>Number of regressors</td>
+                        </tr>
+                        <tr>
+                            <td><code>case</code></td>
+                            <td>int</td>
+                            <td>Case (1-5)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- BootstrapCointegrationTest -->
+            <h2 id="bootstrap-coint">BootstrapCointegrationTest</h2>
+            <p>Bootstrap cointegration tests following Bertelli et al. (2022).</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">class</span> <span class="token class-name">BootstrapCointegrationTest</span>(model, data, depvar, decomp_vars, exog_vars,
+                                  best_lags, n_bootstrap=<span class="token number">1000</span>, case=<span class="token string">'III'</span>,
+                                  random_state=<span class="token keyword">None</span>)</code>
+            </pre>
+
+            <h3>Methods</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Returns</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>get_results()</code></td>
+                            <td>dict</td>
+                            <td>Complete test results</td>
+                        </tr>
+                        <tr>
+                            <td><code>summary_table()</code></td>
+                            <td>pd.DataFrame</td>
+                            <td>Formatted summary table</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ResultsTable -->
+            <h2 id="results-table">ResultsTable</h2>
+            <p>Generate publication-ready tables.</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">class</span> <span class="token class-name">ResultsTable</span>(model)</code>
+            </pre>
+
+            <h3>Methods</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Parameters</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>regression_table(output)</code></td>
+                            <td>output: 'dataframe', 'latex', 'html', 'markdown'</td>
+                            <td>Regression results table</td>
+                        </tr>
+                        <tr>
+                            <td><code>long_run_table(output)</code></td>
+                            <td>output: format string</td>
+                            <td>Long-run multipliers table</td>
+                        </tr>
+                        <tr>
+                            <td><code>short_run_table(output)</code></td>
+                            <td>output: format string</td>
+                            <td>Short-run coefficients table</td>
+                        </tr>
+                        <tr>
+                            <td><code>diagnostics_table(output)</code></td>
+                            <td>output: format string</td>
+                            <td>Diagnostic tests table</td>
+                        </tr>
+                        <tr>
+                            <td><code>bounds_test_table(output)</code></td>
+                            <td>output: format string</td>
+                            <td>Bounds test table</td>
+                        </tr>
+                        <tr>
+                            <td><code>wald_test_table(output)</code></td>
+                            <td>output: format string</td>
+                            <td>Wald asymmetry tests table</td>
+                        </tr>
+                        <tr>
+                            <td><code>to_latex(filename, tables)</code></td>
+                            <td>filename: str, tables: list or 'all'</td>
+                            <td>Export to LaTeX file</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- NARDLPlots -->
+            <h2 id="nardl-plots">NARDLPlots</h2>
+            <p>Visualization tools for NARDL models.</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">class</span> <span class="token class-name">NARDLPlots</span>(model)</code>
+            </pre>
+
+            <h3>Methods</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Parameters</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>dynamic_multipliers(var, horizon, ci)</code></td>
+                            <td>var: str, horizon: int, ci: float</td>
+                            <td>Dynamic multiplier plot</td>
+                        </tr>
+                        <tr>
+                            <td><code>cusum(alpha)</code></td>
+                            <td>alpha: significance level</td>
+                            <td>CUSUM plot</td>
+                        </tr>
+                        <tr>
+                            <td><code>cusumsq(alpha)</code></td>
+                            <td>alpha: significance level</td>
+                            <td>CUSUM of squares plot</td>
+                        </tr>
+                        <tr>
+                            <td><code>residual_diagnostics()</code></td>
+                            <td>-</td>
+                            <td>Residual diagnostic plots</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Utilities -->
+            <h2 id="utilities">Utility Functions</h2>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">from</span> nardl_fourier.utils <span class="token keyword">import</span> (
+    partial_sum_decomposition,
+    check_stationarity,
+    compute_fourier_terms
+)</code>
+            </pre>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Function</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>partial_sum_decomposition(x)</code></td>
+                            <td>Decompose series into positive/negative partial sums</td>
+                        </tr>
+                        <tr>
+                            <td><code>check_stationarity(x, test, alpha)</code></td>
+                            <td>ADF/PP/KPSS stationarity tests</td>
+                        </tr>
+                        <tr>
+                            <td><code>compute_fourier_terms(T, k)</code></td>
+                            <td>Compute sin/cos terms for frequency k</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Diagnostics -->
+            <h2 id="diagnostics">Diagnostic Functions</h2>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">from</span> nardl_fourier.diagnostics <span class="token keyword">import</span> (
+    jarque_bera_test,
+    breusch_godfrey_test,
+    breusch_pagan_test,
+    cusum_test,
+    cusumsq_test,
+    run_all_diagnostics
+)</code>
+            </pre>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Function</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>jarque_bera_test(resid)</code></td>
+                            <td>Normality test</td>
+                        </tr>
+                        <tr>
+                            <td><code>breusch_godfrey_test(model, nlags)</code></td>
+                            <td>Serial correlation test</td>
+                        </tr>
+                        <tr>
+                            <td><code>breusch_pagan_test(model)</code></td>
+                            <td>Heteroskedasticity test</td>
+                        </tr>
+                        <tr>
+                            <td><code>cusum_test(resid, alpha)</code></td>
+                            <td>CUSUM stability test</td>
+                        </tr>
+                        <tr>
+                            <td><code>cusumsq_test(resid, alpha)</code></td>
+                            <td>CUSUM of squares test</td>
+                        </tr>
+                        <tr>
+                            <td><code>run_all_diagnostics(model)</code></td>
+                            <td>Run all diagnostics at once</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-left: 280px;">
+        <div class="footer-bottom" style="max-width: 100%; padding: 2rem;">
+            <span>© 2024 NARDL-Fourier. MIT License.</span>
+            <span>Made with ❤️ by <a href="https://github.com/merwanroudane">Dr. Merwan Roudane</a></span>
+        </div>
+    </footer>
+</body>
+
+</html>

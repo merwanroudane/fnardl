@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examples - NARDL-Fourier</title>
+    <meta name="description" content="Practical examples and use cases for the NARDL-Fourier library.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo">NF</div>
+            <span class="nav-title">NARDL-Fourier</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li><a href="nardl.html">NARDL</a></li>
+            <li><a href="fourier-nardl.html">Fourier NARDL</a></li>
+            <li><a href="bootstrap-nardl.html">Bootstrap NARDL</a></li>
+            <li><a href="api-reference.html">API</a></li>
+            <li><a href="https://github.com/merwanroudane/fnardl" target="_blank">GitHub ↗</a></li>
+        </ul>
+    </nav>
+
+    <!-- Documentation Layout -->
+    <div class="doc-layout">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h4>Examples</h4>
+                <ul class="sidebar-links">
+                    <li><a href="#energy" class="active">Energy Economics</a></li>
+                    <li><a href="#exchange-rates">Exchange Rate Pass-Through</a></li>
+                    <li><a href="#comparing">Comparing Models</a></li>
+                    <li><a href="#publication">Publication Tables</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="doc-content">
+            <h1>Examples & Use Cases</h1>
+            <p>
+                Practical examples demonstrating how to use NARDL-Fourier for different research applications.
+            </p>
+
+            <!-- Energy Economics Example -->
+            <h2 id="energy">Example 1: Energy Economics</h2>
+            <p>
+                Analyzing asymmetric effects of oil prices on coal consumption following the
+                methodology of Zaghdoudi et al. (2023).
+            </p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+<span class="token keyword">import</span> numpy <span class="token keyword">as</span> np
+<span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> NARDL, FourierNARDL, BootstrapNARDL, ResultsTable
+
+<span class="token comment"># Load energy data</span>
+<span class="token comment"># Assuming annual data for a country</span>
+df <span class="token operator">=</span> pd.<span class="token function">read_excel</span>(<span class="token string">'energy_data.xlsx'</span>)
+
+<span class="token comment"># Variables:</span>
+<span class="token comment"># - coal: Coal consumption per capita (log)</span>
+<span class="token comment"># - oil_price: Real oil price (log)</span>
+<span class="token comment"># - gdp: GDP per capita (log)</span>
+<span class="token comment"># - gdp2: Squared GDP to capture EKC</span>
+
+<span class="token function">print</span>(<span class="token string">"Data preview:"</span>)
+<span class="token function">print</span>(df.<span class="token function">head</span>())
+<span class="token function">print</span>(<span class="token string">f"\\nObservations: </span>{len(df)}<span class="token string">"</span>)
+
+<span class="token comment"># Step 1: Fit Standard NARDL</span>
+<span class="token function">print</span>(<span class="token string">"\\n"</span> <span class="token operator">+</span> <span class="token string">"="</span><span class="token operator">*</span><span class="token number">60</span>)
+<span class="token function">print</span>(<span class="token string">"STANDARD NARDL MODEL"</span>)
+<span class="token function">print</span>(<span class="token string">"="</span><span class="token operator">*</span><span class="token number">60</span>)
+
+nardl <span class="token operator">=</span> <span class="token class-name">NARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>, <span class="token string">'gdp2'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    ic<span class="token operator">=</span><span class="token string">'AIC'</span>,
+    case<span class="token operator">=</span><span class="token number">3</span>
+)
+
+<span class="token function">print</span>(nardl.<span class="token function">summary</span>())
+
+<span class="token comment"># Step 2: Fit Fourier NARDL (account for structural breaks)</span>
+<span class="token function">print</span>(<span class="token string">"\\n"</span> <span class="token operator">+</span> <span class="token string">"="</span><span class="token operator">*</span><span class="token number">60</span>)
+<span class="token function">print</span>(<span class="token string">"FOURIER NARDL MODEL"</span>)
+<span class="token function">print</span>(<span class="token string">"="</span><span class="token operator">*</span><span class="token number">60</span>)
+
+fnardl <span class="token operator">=</span> <span class="token class-name">FourierNARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>, <span class="token string">'gdp2'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    max_freq<span class="token operator">=</span><span class="token number">3</span>,
+    ic<span class="token operator">=</span><span class="token string">'AIC'</span>
+)
+
+<span class="token function">print</span>(<span class="token string">f"Optimal Fourier frequency: k* = </span>{fnardl.best_freq}<span class="token string">"</span>)
+<span class="token function">print</span>(fnardl.<span class="token function">summary</span>())
+
+<span class="token comment"># Step 3: Bootstrap test for robust inference</span>
+<span class="token function">print</span>(<span class="token string">"\\n"</span> <span class="token operator">+</span> <span class="token string">"="</span><span class="token operator">*</span><span class="token number">60</span>)
+<span class="token function">print</span>(<span class="token string">"BOOTSTRAP FOURIER NARDL"</span>)
+<span class="token function">print</span>(<span class="token string">"="</span><span class="token operator">*</span><span class="token number">60</span>)
+
+bnardl <span class="token operator">=</span> <span class="token class-name">BootstrapNARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>, <span class="token string">'gdp2'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    max_freq<span class="token operator">=</span><span class="token number">3</span>,
+    n_bootstrap<span class="token operator">=</span><span class="token number">1000</span>,
+    random_state<span class="token operator">=</span><span class="token number">42</span>
+)
+
+<span class="token function">print</span>(bnardl.<span class="token function">summary</span>())
+<span class="token function">print</span>(<span class="token string">"\\nCointegration Decision:"</span>)
+<span class="token function">print</span>(bnardl.<span class="token function">cointegration_decision</span>())</code>
+            </pre>
+
+            <h3>Interpretation</h3>
+            <p>
+                If the long-run multipliers show L⁺ ≠ L⁻ and the Wald test confirms asymmetry,
+                coal consumption responds differently to oil price increases versus decreases.
+                This has important policy implications for energy transitions.
+            </p>
+
+            <!-- Exchange Rate Example -->
+            <h2 id="exchange-rates">Example 2: Exchange Rate Pass-Through</h2>
+            <p>
+                Examining asymmetric exchange rate pass-through to import prices.
+            </p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+<span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> BootstrapNARDL, NARDLPlots
+
+<span class="token comment"># Variables:</span>
+<span class="token comment"># - import_price: Import price index (log)</span>
+<span class="token comment"># - exchange_rate: Nominal exchange rate (log)</span>
+<span class="token comment"># - producer_price: Foreign producer prices (log)</span>
+
+df <span class="token operator">=</span> pd.<span class="token function">read_csv</span>(<span class="token string">'erpt_data.csv'</span>)
+
+<span class="token comment"># Model: Import prices ~ Exchange rate (asymmetric) + Foreign prices</span>
+model <span class="token operator">=</span> <span class="token class-name">BootstrapNARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'import_price'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'producer_price'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'exchange_rate'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    max_freq<span class="token operator">=</span><span class="token number">2</span>,
+    n_bootstrap<span class="token operator">=</span><span class="token number">1000</span>
+)
+
+<span class="token comment"># Results summary</span>
+<span class="token function">print</span>(model.<span class="token function">summary</span>())
+
+<span class="token comment"># Extract key pass-through coefficients</span>
+lr <span class="token operator">=</span> model.long_run[<span class="token string">'exchange_rate'</span>]
+
+<span class="token function">print</span>(<span class="token string">"\\nExchange Rate Pass-Through (ERPT):"</span>)
+<span class="token function">print</span>(<span class="token string">f"  Depreciation (L⁺): </span>{lr[<span class="token string">'positive'</span>][<span class="token string">'coefficient'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  Appreciation (L⁻): </span>{lr[<span class="token string">'negative'</span>][<span class="token string">'coefficient'</span>]:.4f}<span class="token string">"</span>)
+
+<span class="token comment"># Interpretation</span>
+<span class="token keyword">if</span> <span class="token function">abs</span>(lr[<span class="token string">'positive'</span>][<span class="token string">'coefficient'</span>]) <span class="token operator">></span> <span class="token function">abs</span>(lr[<span class="token string">'negative'</span>][<span class="token string">'coefficient'</span>]):
+    <span class="token function">print</span>(<span class="token string">"\\n→ Depreciations have LARGER effects on import prices"</span>)
+    <span class="token function">print</span>(<span class="token string">"  (Firms pass through cost increases more readily)"</span>)
+<span class="token keyword">else</span>:
+    <span class="token function">print</span>(<span class="token string">"\\n→ Appreciations have LARGER effects on import prices"</span>)
+    <span class="token function">print</span>(<span class="token string">"  (Consumers benefit more from currency appreciation)"</span>)
+
+<span class="token comment"># Plot dynamic multipliers</span>
+plots <span class="token operator">=</span> <span class="token class-name">NARDLPlots</span>(model)
+fig <span class="token operator">=</span> plots.<span class="token function">dynamic_multipliers</span>(<span class="token string">'exchange_rate'</span>, horizon<span class="token operator">=</span><span class="token number">20</span>)
+fig.<span class="token function">savefig</span>(<span class="token string">'erpt_multipliers.png'</span>, dpi<span class="token operator">=</span><span class="token number">300</span>)</code>
+            </pre>
+
+            <!-- Comparing Models -->
+            <h2 id="comparing">Example 3: Comparing All Three Models</h2>
+            <p>
+                A systematic comparison of NARDL, Fourier NARDL, and Bootstrap NARDL.
+            </p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+<span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> NARDL, FourierNARDL, BootstrapNARDL
+
+<span class="token comment"># Load data</span>
+df <span class="token operator">=</span> pd.<span class="token function">read_csv</span>(<span class="token string">'data.csv'</span>)
+
+<span class="token comment"># Common specification</span>
+spec <span class="token operator">=</span> {
+    <span class="token string">'data'</span>: df,
+    <span class="token string">'depvar'</span>: <span class="token string">'y'</span>,
+    <span class="token string">'exog_vars'</span>: [<span class="token string">'z'</span>],
+    <span class="token string">'decomp_vars'</span>: [<span class="token string">'x'</span>],
+    <span class="token string">'maxlag'</span>: <span class="token number">4</span>,
+    <span class="token string">'ic'</span>: <span class="token string">'AIC'</span>
+}
+
+<span class="token comment"># Fit all three models</span>
+m1 <span class="token operator">=</span> <span class="token class-name">NARDL</span>(**spec)
+m2 <span class="token operator">=</span> <span class="token class-name">FourierNARDL</span>(**spec, max_freq<span class="token operator">=</span><span class="token number">3</span>)
+m3 <span class="token operator">=</span> <span class="token class-name">BootstrapNARDL</span>(**spec, max_freq<span class="token operator">=</span><span class="token number">3</span>, n_bootstrap<span class="token operator">=</span><span class="token number">1000</span>)
+
+<span class="token comment"># Comparison table</span>
+comparison <span class="token operator">=</span> pd.<span class="token class-name">DataFrame</span>({
+    <span class="token string">'Metric'</span>: [<span class="token string">'R²'</span>, <span class="token string">'Adj. R²'</span>, <span class="token string">'AIC'</span>, <span class="token string">'F-stat'</span>, <span class="token string">'Bounds Decision'</span>, <span class="token string">'ECT (ρ)'</span>],
+    <span class="token string">'NARDL'</span>: [
+        <span class="token string">f"</span>{m1.model.rsquared:.4f}<span class="token string">"</span>,
+        <span class="token string">f"</span>{m1.model.rsquared_adj:.4f}<span class="token string">"</span>,
+        <span class="token string">f"</span>{m1.best_ic:.2f}<span class="token string">"</span>,
+        <span class="token string">f"</span>{m1.bounds_test[<span class="token string">'f_statistic'</span>]:.4f}<span class="token string">"</span>,
+        m1.bounds_test[<span class="token string">'decision'</span>][<span class="token string">'F_5%'</span>],
+        <span class="token string">f"</span>{m1.ect[<span class="token string">'coefficient'</span>]:.4f}<span class="token string">"</span>
+    ],
+    <span class="token string">'Fourier NARDL'</span>: [
+        <span class="token string">f"</span>{m2.model.rsquared:.4f}<span class="token string">"</span>,
+        <span class="token string">f"</span>{m2.model.rsquared_adj:.4f}<span class="token string">"</span>,
+        <span class="token string">f"</span>{m2.best_ic:.2f}<span class="token string">"</span>,
+        <span class="token string">f"</span>{m2.bounds_test[<span class="token string">'f_statistic'</span>]:.4f}<span class="token string">"</span>,
+        m2.bounds_test[<span class="token string">'decision'</span>][<span class="token string">'F_5%'</span>],
+        <span class="token string">f"</span>{m2.ect[<span class="token string">'coefficient'</span>]:.4f}<span class="token string">"</span>
+    ],
+    <span class="token string">'Bootstrap NARDL'</span>: [
+        <span class="token string">f"</span>{m3.model.rsquared:.4f}<span class="token string">"</span>,
+        <span class="token string">f"</span>{m3.model.rsquared_adj:.4f}<span class="token string">"</span>,
+        <span class="token string">f"</span>{m3.best_ic:.2f}<span class="token string">"</span>,
+        <span class="token string">f"</span>{m3.bounds_test[<span class="token string">'f_statistic'</span>]:.4f}<span class="token string">"</span>,
+        m3.bootstrap_results[<span class="token string">'overall'</span>],
+        <span class="token string">f"</span>{m3.ect[<span class="token string">'coefficient'</span>]:.4f}<span class="token string">"</span>
+    ]
+})
+
+<span class="token function">print</span>(<span class="token string">"Model Comparison:"</span>)
+<span class="token function">print</span>(comparison.<span class="token function">to_string</span>(index<span class="token operator">=</span><span class="token keyword">False</span>))</code>
+            </pre>
+
+            <!-- Publication Tables -->
+            <h2 id="publication">Example 4: Generating Publication Tables</h2>
+            <p>
+                Export results in LaTeX format for academic papers.
+            </p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> BootstrapNARDL, ResultsTable
+
+<span class="token comment"># Fit model</span>
+model <span class="token operator">=</span> <span class="token class-name">BootstrapNARDL</span>(<span class="token operator">...</span>)
+
+<span class="token comment"># Create table generator</span>
+table <span class="token operator">=</span> <span class="token class-name">ResultsTable</span>(model)
+
+<span class="token comment"># Individual tables as DataFrames</span>
+reg_df <span class="token operator">=</span> table.<span class="token function">regression_table</span>()          <span class="token comment"># Full regression</span>
+lr_df <span class="token operator">=</span> table.<span class="token function">long_run_table</span>()              <span class="token comment"># Long-run multipliers</span>
+sr_df <span class="token operator">=</span> table.<span class="token function">short_run_table</span>()            <span class="token comment"># Short-run coefficients</span>
+diag_df <span class="token operator">=</span> table.<span class="token function">diagnostics_table</span>()        <span class="token comment"># Diagnostic tests</span>
+bounds_df <span class="token operator">=</span> table.<span class="token function">bounds_test_table</span>()      <span class="token comment"># Bounds test</span>
+wald_df <span class="token operator">=</span> table.<span class="token function">wald_test_table</span>()          <span class="token comment"># Asymmetry tests</span>
+
+<span class="token comment"># Export to LaTeX</span>
+table.<span class="token function">to_latex</span>(<span class="token string">'results_all.tex'</span>)
+
+<span class="token comment"># Or get individual LaTeX tables</span>
+latex_lr <span class="token operator">=</span> table.<span class="token function">long_run_table</span>(output<span class="token operator">=</span><span class="token string">'latex'</span>)
+<span class="token function">print</span>(latex_lr)
+
+<span class="token comment"># Bootstrap test summary</span>
+<span class="token keyword">if</span> model.bootstrap_test:
+    boot_df <span class="token operator">=</span> model.bootstrap_test.<span class="token function">summary_table</span>()
+    <span class="token function">print</span>(<span class="token string">"\\nBootstrap Cointegration Tests:"</span>)
+    <span class="token function">print</span>(boot_df.<span class="token function">to_latex</span>(index<span class="token operator">=</span><span class="token keyword">False</span>))</code>
+            </pre>
+
+            <div class="callout callout-info">
+                <div class="callout-icon">💡</div>
+                <div>
+                    <div class="callout-title">Output Formats</div>
+                    <p>All table methods support output formats: 'dataframe' (default), 'latex', 'html', and 'markdown'.
+                    </p>
+                </div>
+            </div>
+
+            <h3>Sample LaTeX Output</h3>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">LaTeX</span>
+</div>
+<code>\begin{table}[htbp]
+\centering
+\caption{Long-Run Multipliers}
+\label{tab:long-run_multipliers}
+\begin{tabular}{lcccccc}
+\toprule
+Variable & Coeff. & Std. Error & t-stat & p-value & 95\% CI \\
+\midrule
+oil\_price$^{+}$ & 0.4521 & 0.0823 & 5.49 & 0.0000 & [0.290, 0.614] \\
+oil\_price$^{-}$ & 0.2134 & 0.0756 & 2.82 & 0.0068 & [0.064, 0.363] \\
+\bottomrule
+\end{tabular}
+\end{table}</code>
+            </pre>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-left: 280px;">
+        <div class="footer-bottom" style="max-width: 100%; padding: 2rem;">
+            <span>© 2024 NARDL-Fourier. MIT License.</span>
+            <span>Made with ❤️ by <a href="https://github.com/merwanroudane">Dr. Merwan Roudane</a></span>
+        </div>
+    </footer>
+</body>
+
+</html>

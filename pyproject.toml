@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nardl-fourier"
+version = "1.0.1"
+description = "Nonlinear ARDL with Fourier approximation and Bootstrap cointegration tests"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Dr. Merwan Roudane", email = "merwanroudane920@gmail.com"}
+]
+maintainers = [
+    {name = "Dr. Merwan Roudane", email = "merwanroudane920@gmail.com"}
+]
+keywords = [
+    "econometrics",
+    "NARDL",
+    "cointegration",
+    "asymmetric",
+    "Fourier",
+    "bootstrap",
+    "time-series",
+    "bounds-test"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.20.0",
+    "pandas>=1.3.0",
+    "scipy>=1.7.0",
+    "statsmodels>=0.13.0",
+    "matplotlib>=3.4.0",
+    "tabulate>=0.8.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "isort>=5.10.0",
+    "flake8>=5.0.0",
+]
+notebook = [
+    "jupyter>=1.0.0",
+    "plotly>=5.0.0",
+    "openpyxl>=3.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/merwanroudane/fnardl"
+Documentation = "https://merwanroudane.github.io/fnardl/"
+Repository = "https://github.com/merwanroudane/fnardl"
+Issues = "https://github.com/merwanroudane/fnardl/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["nardl_fourier*"]
+
+[tool.setuptools.package-data]
+"nardl_fourier.data" = ["*.xlsx", "*.csv"]
+
+[tool.black]
+line-length = 100
+target-version = ["py38", "py39", "py310", "py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 100

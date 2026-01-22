@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installation - NARDL-Fourier</title>
+    <meta name="description" content="How to install and set up the NARDL-Fourier Python library.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo">NF</div>
+            <span class="nav-title">NARDL-Fourier</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="installation.html" class="active">Installation</a></li>
+            <li><a href="nardl.html">NARDL</a></li>
+            <li><a href="fourier-nardl.html">Fourier NARDL</a></li>
+            <li><a href="bootstrap-nardl.html">Bootstrap NARDL</a></li>
+            <li><a href="api-reference.html">API</a></li>
+            <li><a href="https://github.com/merwanroudane/fnardl" target="_blank">GitHub ↗</a></li>
+        </ul>
+    </nav>
+
+    <!-- Documentation Layout -->
+    <div class="doc-layout">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h4>Getting Started</h4>
+                <ul class="sidebar-links">
+                    <li><a href="#requirements" class="active">Requirements</a></li>
+                    <li><a href="#pip-install">Install via pip</a></li>
+                    <li><a href="#source-install">Install from source</a></li>
+                    <li><a href="#verify">Verify installation</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Quick Links</h4>
+                <ul class="sidebar-links">
+                    <li><a href="nardl.html">→ NARDL Tutorial</a></li>
+                    <li><a href="fourier-nardl.html">→ Fourier NARDL</a></li>
+                    <li><a href="bootstrap-nardl.html">→ Bootstrap NARDL</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="doc-content">
+            <h1>Installation Guide</h1>
+            <p>
+                Get started with NARDL-Fourier in just a few minutes. This guide covers all installation methods
+                and system requirements.
+            </p>
+
+            <h2 id="requirements">System Requirements</h2>
+            <p>NARDL-Fourier requires the following:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Package</th>
+                            <th>Minimum Version</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Python</code></td>
+                            <td>3.9+</td>
+                            <td>Programming language</td>
+                        </tr>
+                        <tr>
+                            <td><code>numpy</code></td>
+                            <td>1.20+</td>
+                            <td>Numerical computations</td>
+                        </tr>
+                        <tr>
+                            <td><code>pandas</code></td>
+                            <td>1.3+</td>
+                            <td>Data manipulation</td>
+                        </tr>
+                        <tr>
+                            <td><code>scipy</code></td>
+                            <td>1.7+</td>
+                            <td>Statistical functions</td>
+                        </tr>
+                        <tr>
+                            <td><code>statsmodels</code></td>
+                            <td>0.13+</td>
+                            <td>Econometric models</td>
+                        </tr>
+                        <tr>
+                            <td><code>matplotlib</code></td>
+                            <td>3.4+</td>
+                            <td>Plotting (optional)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="pip-install">Install via pip</h2>
+            <p>The easiest way to install NARDL-Fourier is using pip:</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Terminal</span>
+</div>
+<code><span class="token keyword">pip</span> install nardl-fourier</code>
+            </pre>
+
+            <p>To install with all optional dependencies (for plotting):</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Terminal</span>
+</div>
+<code><span class="token keyword">pip</span> install nardl-fourier[full]</code>
+            </pre>
+
+            <h2 id="source-install">Install from Source</h2>
+            <p>For the latest development version, install directly from GitHub:</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Terminal</span>
+</div>
+<code><span class="token comment"># Clone the repository</span>
+<span class="token keyword">git</span> clone https://github.com/merwanroudane/fnardl.git
+
+<span class="token comment"># Navigate to directory</span>
+<span class="token keyword">cd</span> fnardl
+
+<span class="token comment"># Install in development mode</span>
+<span class="token keyword">pip</span> install -e .</code>
+            </pre>
+
+            <div class="callout callout-info">
+                <div class="callout-icon">💡</div>
+                <div>
+                    <div class="callout-title">Development Installation</div>
+                    <p>Using <code>-e</code> (editable mode) allows you to modify the source code and see changes
+                        immediately without reinstalling.</p>
+                </div>
+            </div>
+
+            <h2 id="verify">Verify Installation</h2>
+            <p>After installation, verify everything works correctly:</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">import</span> nardl_fourier
+
+<span class="token comment"># Check version</span>
+<span class="token function">print</span>(nardl_fourier.__version__)
+<span class="token comment"># Output: 1.0.0</span>
+
+<span class="token comment"># Import main classes</span>
+<span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> NARDL, FourierNARDL, BootstrapNARDL
+<span class="token function">print</span>(<span class="token string">"✓ All imports successful!"</span>)</code>
+            </pre>
+
+            <div class="callout callout-success">
+                <div class="callout-icon">✅</div>
+                <div>
+                    <div class="callout-title">Ready to Go!</div>
+                    <p>You're all set! Head to the <a href="nardl.html" style="color: var(--accent-green);">NARDL
+                            tutorial</a> to start building your first model.</p>
+                </div>
+            </div>
+
+            <h2>Troubleshooting</h2>
+
+            <h3>Common Issues</h3>
+
+            <p><strong>ImportError: No module named 'statsmodels'</strong></p>
+            <p>Install the missing dependency:</p>
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Terminal</span>
+</div>
+<code><span class="token keyword">pip</span> install statsmodels</code>
+            </pre>
+
+            <p><strong>ModuleNotFoundError: nardl_fourier</strong></p>
+            <p>Make sure you're using the correct Python environment:</p>
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Terminal</span>
+</div>
+<code><span class="token comment"># Check which Python is being used</span>
+<span class="token keyword">which</span> python
+<span class="token keyword">pip</span> list | grep nardl</code>
+            </pre>
+
+            <div class="callout callout-warning">
+                <div class="callout-icon">⚠️</div>
+                <div>
+                    <div class="callout-title">Virtual Environments</div>
+                    <p>We recommend using a virtual environment (venv, conda) to avoid dependency conflicts with other
+                        packages.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-left: 280px;">
+        <div class="footer-bottom" style="max-width: 100%; padding: 2rem;">
+            <span>© 2024 NARDL-Fourier. MIT License.</span>
+            <span>Made with ❤️ by <a href="https://github.com/merwanroudane">Dr. Merwan Roudane</a></span>
+        </div>
+    </footer>
+</body>
+
+</html>

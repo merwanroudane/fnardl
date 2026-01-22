@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NARDL-Fourier - Nonlinear ARDL with Fourier Approximation</title>
+    <meta name="description"
+        content="A comprehensive Python library for Nonlinear ARDL modeling with Fourier approximation and Bootstrap cointegration tests.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax for LaTeX -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo">NF</div>
+            <span class="nav-title">NARDL-Fourier</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li><a href="nardl.html">NARDL</a></li>
+            <li><a href="fourier-nardl.html">Fourier NARDL</a></li>
+            <li><a href="bootstrap-nardl.html">Bootstrap NARDL</a></li>
+            <li><a href="api-reference.html">API</a></li>
+            <li><a href="https://github.com/merwanroudane/fnardl" target="_blank">GitHub ↗</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge animate-fade-in">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Version 1.0.1 — Now Available
+        </div>
+
+        <h1 class="hero-title animate-fade-in delay-1">
+            Advanced <span class="gradient-text">Nonlinear ARDL</span><br>
+            with Fourier & Bootstrap
+        </h1>
+
+        <p class="hero-subtitle animate-fade-in delay-2">
+            A comprehensive Python library implementing NARDL, Fourier-NARDL, and Bootstrap Fourier-NARDL models
+            for robust cointegration analysis and asymmetric effects estimation.
+        </p>
+
+        <div class="hero-buttons animate-fade-in delay-3">
+            <a href="installation.html" class="btn btn-primary">
+                Get Started
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+            <a href="https://github.com/merwanroudane/fnardl" class="btn btn-secondary" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                </svg>
+                View on GitHub
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title">Three Powerful Models</h2>
+        <p class="section-subtitle">
+            Choose the right model for your research needs, from standard NARDL to advanced bootstrap methods
+        </p>
+
+        <div class="feature-grid">
+            <!-- NARDL Card -->
+            <div class="feature-card reveal">
+                <div class="feature-icon blue">📊</div>
+                <h3>Standard NARDL</h3>
+                <p>
+                    The foundational Nonlinear ARDL model based on Shin, Yu & Greenwood-Nimmo (2014).
+                    Decompose variables into positive and negative changes to capture asymmetric effects.
+                </p>
+                <a href="nardl.html" class="learn-more">
+                    Learn more
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Fourier NARDL Card -->
+            <div class="feature-card reveal">
+                <div class="feature-icon purple">🌊</div>
+                <h3>Fourier NARDL</h3>
+                <p>
+                    Extends NARDL with Fourier approximation for smooth structural breaks (Zaghdoudi et al., 2023).
+                    Capture gradual regime changes without specifying break dates.
+                </p>
+                <a href="fourier-nardl.html" class="learn-more">
+                    Learn more
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Bootstrap NARDL Card -->
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">🔄</div>
+                <h3>Bootstrap Fourier NARDL</h3>
+                <p>
+                    Combines Fourier-NARDL with bootstrap cointegration tests (Bertelli et al., 2022).
+                    Eliminates the inconclusive zone problem of PSS bounds tests.
+                </p>
+                <a href="bootstrap-nardl.html" class="learn-more">
+                    Learn more
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Example Section -->
+    <section class="code-section">
+        <div class="code-container">
+            <h2 class="section-title">Quick Start</h2>
+            <p class="section-subtitle">Get up and running in minutes with our intuitive API</p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots">
+        <span></span><span></span><span></span>
+    </div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> NARDL, FourierNARDL, BootstrapNARDL
+
+<span class="token comment"># Standard NARDL Model</span>
+model <span class="token operator">=</span> <span class="token class-name">NARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal_consumption'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>, <span class="token string">'population'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    ic<span class="token operator">=</span><span class="token string">'AIC'</span>
+)
+
+<span class="token comment"># View results</span>
+<span class="token function">print</span>(model.<span class="token function">summary</span>())
+
+<span class="token comment"># Long-run multipliers</span>
+<span class="token function">print</span>(<span class="token string">f"L⁺: </span>{model.long_run[<span class="token string">'oil_price'</span>][<span class="token string">'positive'</span>][<span class="token string">'coefficient'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"L⁻: </span>{model.long_run[<span class="token string">'oil_price'</span>][<span class="token string">'negative'</span>][<span class="token string">'coefficient'</span>]:.4f}<span class="token string">"</span>)
+
+<span class="token comment"># Cointegration test</span>
+<span class="token function">print</span>(<span class="token string">f"Bounds Test: </span>{model.bounds_test[<span class="token string">'decision'</span>][<span class="token string">'F_5%'</span>]}<span class="token string">"</span>)</code>
+            </pre>
+        </div>
+    </section>
+
+    <!-- Key Features -->
+    <section class="features">
+        <h2 class="section-title">Key Features</h2>
+        <p class="section-subtitle">Everything you need for professional econometric analysis</p>
+
+        <div class="feature-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon blue">📈</div>
+                <h3>Long-Run Multipliers</h3>
+                <p>Compute and test asymmetric long-run effects with standard errors and confidence intervals using the
+                    delta method.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon purple">⚡</div>
+                <h3>Dynamic Multipliers</h3>
+                <p>Visualize the dynamic adjustment paths for positive and negative shocks with cumulative multiplier
+                    plots.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">🧪</div>
+                <h3>PSS Bounds Test</h3>
+                <p>Test for cointegration with critical values for all cases and significance levels following Pesaran
+                    et al. (2001).</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon blue">📋</div>
+                <h3>Wald Asymmetry Tests</h3>
+                <p>Formally test for short-run and long-run asymmetry with F-statistics and p-values.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon purple">📝</div>
+                <h3>Publication-Ready Tables</h3>
+                <p>Export results to LaTeX, HTML, or markdown formats ready for academic papers.</p>
+            </div>
+
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">🔍</div>
+                <h3>Comprehensive Diagnostics</h3>
+                <p>Jarque-Bera, Breusch-Godfrey, Breusch-Pagan, CUSUM, and CUSUMSQ tests included.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- References -->
+    <section class="features" style="background: rgba(17, 24, 39, 0.5); margin-top: 0; padding-top: 4rem;">
+        <h2 class="section-title">Academic References</h2>
+        <p class="section-subtitle">Built on rigorous econometric foundations</p>
+
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="callout callout-info">
+                <div class="callout-icon">📚</div>
+                <div>
+                    <div class="callout-title">Shin, Yu & Greenwood-Nimmo (2014)</div>
+                    <p>"Modelling Asymmetric Cointegration and Dynamic Multipliers in a Nonlinear ARDL Framework"</p>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <div class="callout-icon">📚</div>
+                <div>
+                    <div class="callout-title">Zaghdoudi, Maktouf & Ochi (2023)</div>
+                    <p>"Fourier Nonlinear ARDL Model for Smooth Structural Breaks"</p>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <div class="callout-icon">📚</div>
+                <div>
+                    <div class="callout-title">Bertelli, Vacca & Zoia (2022)</div>
+                    <p>"Bootstrap cointegration tests in ARDL models" - Economic Modelling, 116, 105987</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>NARDL-Fourier</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7;">
+                    A professional Python library for nonlinear cointegration analysis.
+                </p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Documentation</h4>
+                <ul>
+                    <li><a href="installation.html">Installation</a></li>
+                    <li><a href="nardl.html">NARDL Model</a></li>
+                    <li><a href="fourier-nardl.html">Fourier NARDL</a></li>
+                    <li><a href="bootstrap-nardl.html">Bootstrap NARDL</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="api-reference.html">API Reference</a></li>
+                    <li><a href="examples.html">Examples</a></li>
+                    <li><a href="https://github.com/merwanroudane/fnardl" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Author</h4>
+                <ul>
+                    <li><a href="mailto:merwanroudane920@gmail.com">Dr. Merwan Roudane</a></li>
+                    <li><a href="https://github.com/merwanroudane" target="_blank">GitHub Profile</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2024 NARDL-Fourier. MIT License.</span>
+            <span>Made with ❤️ by <a href="https://github.com/merwanroudane">Dr. Merwan Roudane</a></span>
+        </div>
+    </footer>
+
+    <!-- Scroll Reveal Script -->
+    <script>
+        // Reveal elements on scroll
+        const reveals = document.querySelectorAll('.reveal');
+
+        function revealOnScroll() {
+            reveals.forEach(element => {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const revealPoint = 150;
+
+                if (elementTop < windowHeight - revealPoint) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Fourier NARDL - NARDL-Fourier</title>
+    <meta name="description"
+        content="Bootstrap Fourier NARDL with bootstrap cointegration tests following Bertelli, Vacca & Zoia (2022).">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo">NF</div>
+            <span class="nav-title">NARDL-Fourier</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li><a href="nardl.html">NARDL</a></li>
+            <li><a href="fourier-nardl.html">Fourier NARDL</a></li>
+            <li><a href="bootstrap-nardl.html" class="active">Bootstrap NARDL</a></li>
+            <li><a href="api-reference.html">API</a></li>
+            <li><a href="https://github.com/merwanroudane/fnardl" target="_blank">GitHub ↗</a></li>
+        </ul>
+    </nav>
+
+    <!-- Documentation Layout -->
+    <div class="doc-layout">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h4>Bootstrap NARDL</h4>
+                <ul class="sidebar-links">
+                    <li><a href="#overview" class="active">Overview</a></li>
+                    <li><a href="#motivation">Motivation</a></li>
+                    <li><a href="#theory">Theoretical Framework</a></li>
+                    <li><a href="#tests">Three Bootstrap Tests</a></li>
+                    <li><a href="#algorithm">Bootstrap Algorithm</a></li>
+                    <li><a href="#usage">Basic Usage</a></li>
+                    <li><a href="#interpretation">Interpretation</a></li>
+                    <li><a href="#visualization">Visualization</a></li>
+                    <li><a href="#example">Complete Example</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Related</h4>
+                <ul class="sidebar-links">
+                    <li><a href="nardl.html">← Standard NARDL</a></li>
+                    <li><a href="fourier-nardl.html">← Fourier NARDL</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="doc-content">
+            <h1>Bootstrap Fourier NARDL</h1>
+            <p>
+                The Bootstrap Fourier NARDL combines the Fourier-NARDL framework with
+                <strong>bootstrap-based cointegration tests</strong> following
+                <strong>Bertelli, Vacca & Zoia (2022)</strong>. This approach eliminates
+                the inconclusive zone problem inherent in PSS bounds tests.
+            </p>
+
+            <h2 id="overview">Overview</h2>
+            <p>
+                The PSS bounds test has a well-known limitation: when the F-statistic falls between
+                the I(0) and I(1) critical value bounds, the test is inconclusive. The bootstrap
+                approach resolves this by generating data-specific critical values through resampling.
+            </p>
+
+            <div class="callout callout-success">
+                <div class="callout-icon">✨</div>
+                <div>
+                    <div class="callout-title">Key Advantage</div>
+                    <p>Bootstrap critical values are computed from your specific data, providing a definitive
+                        cointegration decision without inconclusive zones.</p>
+                </div>
+            </div>
+
+            <h2 id="motivation">Motivation</h2>
+            <p>
+                The traditional PSS bounds test creates three possible outcomes:
+            </p>
+            <ul>
+                <li><strong>F > I(1):</strong> Cointegration (clear result)</li>
+                <li><strong>F < I(0):</strong> No cointegration (clear result)</li>
+                <li><strong>I(0) < F < I(1):</strong> Inconclusive (problematic!)</li>
+            </ul>
+            <p>
+                The inconclusive zone can be frustrating for researchers. Moreover, tabulated critical
+                values may not be accurate for small sample sizes or non-standard error distributions.
+            </p>
+
+            <h2 id="theory">Theoretical Framework</h2>
+            <p>
+                Bertelli, Vacca & Zoia (2022) propose a comprehensive testing strategy with three tests:
+            </p>
+
+            <div class="math-block">
+                <p style="margin-bottom: 1rem;"><strong>Test 1 (F_ov):</strong> Overall F-test for cointegration</p>
+                \[H_0: \rho = \theta^+ = \theta^- = 0 \text{ (no long-run relationship)}\]
+
+                <p style="margin: 1.5rem 0 1rem;"><strong>Test 2 (t):</strong> Degenerate case of Type 1</p>
+                \[H_0: \rho = 0 \text{ (dependent variable does not adjust)}\]
+
+                <p style="margin: 1.5rem 0 1rem;"><strong>Test 3 (F_ind):</strong> Degenerate case of Type 2</p>
+                \[H_0: \theta^+ = \theta^- = 0 \text{ (X not in long-run relationship)}\]
+            </div>
+
+            <h2 id="tests">Three Bootstrap Tests</h2>
+
+            <h3>1. Overall F-test (F_ov)</h3>
+            <p>
+                Tests whether all level coefficients are jointly zero. This is the primary cointegration test.
+            </p>
+
+            <h3>2. t-test for Error Correction</h3>
+            <p>
+                Tests whether the error correction coefficient (\(\rho\)) is zero. If \(\rho = 0\),
+                the dependent variable does not adjust to disequilibrium.
+            </p>
+
+            <h3>3. Independent Variables F-test (F_ind)</h3>
+            <p>
+                Tests whether the independent variables have zero long-run effect. If we reject \(H_0\)
+                for F_ov but fail to reject for F_ind, we have a "degenerate" relationship.
+            </p>
+
+            <h2 id="algorithm">Bootstrap Algorithm</h2>
+            <p>
+                The bootstrap procedure follows these steps:
+            </p>
+            <ol>
+                <li>Estimate the unrestricted model and obtain residuals \(\hat{\varepsilon}_t\)</li>
+                <li>For each bootstrap replication \(b = 1, \ldots, B\):
+                    <ul>
+                        <li>Resample residuals with replacement</li>
+                        <li>Recenter resampled residuals (Davidson & MacKinnon, 2005)</li>
+                        <li>Generate bootstrap \(y^*\) values</li>
+                        <li>Re-estimate the model and compute test statistics</li>
+                    </ul>
+                </li>
+                <li>Compute bootstrap critical values from the empirical distribution</li>
+                <li>Compare original statistics to bootstrap critical values</li>
+            </ol>
+
+            <h2 id="usage">Basic Usage</h2>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> BootstrapNARDL
+
+<span class="token comment"># Fit Bootstrap Fourier NARDL</span>
+model <span class="token operator">=</span> <span class="token class-name">BootstrapNARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    max_freq<span class="token operator">=</span><span class="token number">3</span>,
+    n_bootstrap<span class="token operator">=</span><span class="token number">1000</span>,      <span class="token comment"># Number of bootstrap replications</span>
+    random_state<span class="token operator">=</span><span class="token number">42</span>       <span class="token comment"># For reproducibility</span>
+)
+
+<span class="token comment"># View summary with bootstrap tests</span>
+<span class="token function">print</span>(model.<span class="token function">summary</span>())
+
+<span class="token comment"># Get cointegration decision</span>
+<span class="token function">print</span>(model.<span class="token function">cointegration_decision</span>())</code>
+            </pre>
+
+            <h3>Bootstrap Parameters</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>n_bootstrap</code></td>
+                            <td>int</td>
+                            <td>Number of bootstrap replications (default: 1000)</td>
+                        </tr>
+                        <tr>
+                            <td><code>bootstrap_case</code></td>
+                            <td>str</td>
+                            <td>Case for bootstrap test: 'II' or 'III' (default: 'III')</td>
+                        </tr>
+                        <tr>
+                            <td><code>random_state</code></td>
+                            <td>int</td>
+                            <td>Random seed for reproducibility</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="interpretation">Interpreting Results</h2>
+            <p>
+                The bootstrap test follows a decision flowchart:
+            </p>
+
+            <div class="callout callout-info">
+                <div class="callout-icon">🔍</div>
+                <div>
+                    <div class="callout-title">Decision Flowchart</div>
+                    <p>
+                        1. <strong>If F_ov is significant:</strong> Continue to next tests<br>
+                        2. <strong>If t is significant:</strong> Y adjusts to equilibrium ✓<br>
+                        3. <strong>If F_ind is significant:</strong> X appears in long-run ✓<br>
+                        4. <strong>All three significant:</strong> COINTEGRATION ✅
+                    </p>
+                </div>
+            </div>
+
+            <h3>Possible Outcomes</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>F_ov</th>
+                            <th>t</th>
+                            <th>F_ind</th>
+                            <th>Conclusion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>✓ Reject</td>
+                            <td>✓ Reject</td>
+                            <td>✓ Reject</td>
+                            <td>✅ <strong>COINTEGRATION</strong></td>
+                        </tr>
+                        <tr>
+                            <td>✓ Reject</td>
+                            <td>✓ Reject</td>
+                            <td>✗ Fail</td>
+                            <td>⚠️ Degenerate Type 2 (X not in long-run)</td>
+                        </tr>
+                        <tr>
+                            <td>✓ Reject</td>
+                            <td>✗ Fail</td>
+                            <td>✓ Reject</td>
+                            <td>⚠️ Degenerate Type 1 (Y does not adjust)</td>
+                        </tr>
+                        <tr>
+                            <td>✗ Fail</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>❌ NO COINTEGRATION</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token comment"># Access detailed bootstrap results</span>
+results <span class="token operator">=</span> model.bootstrap_results
+
+<span class="token function">print</span>(<span class="token string">"Bootstrap Cointegration Tests:"</span>)
+<span class="token function">print</span>(<span class="token string">"="</span> <span class="token operator">*</span> <span class="token number">50</span>)
+
+<span class="token keyword">for</span> test <span class="token keyword">in</span> [<span class="token string">'F_ov'</span>, <span class="token string">'t'</span>, <span class="token string">'F_ind'</span>]:
+    stat <span class="token operator">=</span> results[<span class="token string">'statistics'</span>][test]
+    cv <span class="token operator">=</span> results[<span class="token string">'critical_values'</span>][test][<span class="token string">'5%'</span>]
+    pval <span class="token operator">=</span> results[<span class="token string">'p_values'</span>][test]
+    decision <span class="token operator">=</span> <span class="token string">'✓ Reject H₀'</span> <span class="token keyword">if</span> results[<span class="token string">'conclusions'</span>][test] <span class="token keyword">else</span> <span class="token string">'✗ Fail to reject'</span>
+    
+    <span class="token function">print</span>(<span class="token string">f"\\n{test}:"</span>)
+    <span class="token function">print</span>(<span class="token string">f"  Statistic:      </span>{stat:.4f}<span class="token string">"</span>)
+    <span class="token function">print</span>(<span class="token string">f"  Bootstrap CV 5%: </span>{cv:.4f}<span class="token string">"</span>)
+    <span class="token function">print</span>(<span class="token string">f"  p-value:        </span>{pval:.4f}<span class="token string">"</span>)
+    <span class="token function">print</span>(<span class="token string">f"  Decision:       </span>{decision}<span class="token string">"</span>)
+
+<span class="token function">print</span>(<span class="token string">"\\n"</span> <span class="token operator">+</span> <span class="token string">"="</span> <span class="token operator">*</span> <span class="token number">50</span>)
+<span class="token function">print</span>(<span class="token string">f"Overall: </span>{results[<span class="token string">'overall'</span>]}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"</span>{results[<span class="token string">'interpretation'</span>]}<span class="token string">"</span>)</code>
+            </pre>
+
+            <h2 id="visualization">Visualization</h2>
+            <p>
+                Visualize the bootstrap distributions to see how your test statistics compare:
+            </p>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token comment"># Plot bootstrap distributions</span>
+fig <span class="token operator">=</span> model.<span class="token function">plot_bootstrap_distributions</span>(figsize<span class="token operator">=</span>(<span class="token number">15</span>, <span class="token number">5</span>))
+
+<span class="token comment"># The plot shows:</span>
+<span class="token comment"># - Histogram of bootstrap statistics</span>
+<span class="token comment"># - Red line: observed statistic</span>
+<span class="token comment"># - Green dashed line: 5% critical value</span>
+
+fig.<span class="token function">savefig</span>(<span class="token string">'bootstrap_distributions.png'</span>, dpi<span class="token operator">=</span><span class="token number">300</span>, bbox_inches<span class="token operator">=</span><span class="token string">'tight'</span>)</code>
+            </pre>
+
+            <h2 id="example">Complete Example</h2>
+
+            <pre>
+<div class="code-header">
+    <div class="code-dots"><span></span><span></span><span></span></div>
+    <span class="code-lang">Python</span>
+</div>
+<code><span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
+<span class="token keyword">import</span> numpy <span class="token keyword">as</span> np
+<span class="token keyword">from</span> nardl_fourier <span class="token keyword">import</span> BootstrapNARDL
+
+<span class="token comment"># Load or create data</span>
+np.random.<span class="token function">seed</span>(<span class="token number">42</span>)
+n <span class="token operator">=</span> <span class="token number">150</span>
+df <span class="token operator">=</span> pd.<span class="token class-name">DataFrame</span>({
+    <span class="token string">'coal'</span>: np.<span class="token function">cumsum</span>(np.random.<span class="token function">randn</span>(n)),
+    <span class="token string">'oil_price'</span>: np.<span class="token function">cumsum</span>(np.random.<span class="token function">randn</span>(n)),
+    <span class="token string">'gdp'</span>: np.<span class="token function">cumsum</span>(np.random.<span class="token function">randn</span>(n))
+})
+
+<span class="token comment"># Fit Bootstrap Fourier NARDL</span>
+model <span class="token operator">=</span> <span class="token class-name">BootstrapNARDL</span>(
+    data<span class="token operator">=</span>df,
+    depvar<span class="token operator">=</span><span class="token string">'coal'</span>,
+    exog_vars<span class="token operator">=</span>[<span class="token string">'gdp'</span>],
+    decomp_vars<span class="token operator">=</span>[<span class="token string">'oil_price'</span>],
+    maxlag<span class="token operator">=</span><span class="token number">4</span>,
+    max_freq<span class="token operator">=</span><span class="token number">2</span>,
+    n_bootstrap<span class="token operator">=</span><span class="token number">1000</span>,
+    random_state<span class="token operator">=</span><span class="token number">42</span>
+)
+
+<span class="token comment"># Full summary output</span>
+<span class="token function">print</span>(model.<span class="token function">summary</span>())
+
+<span class="token comment"># Bootstrap summary table</span>
+<span class="token keyword">if</span> model.bootstrap_test:
+    table <span class="token operator">=</span> model.bootstrap_test.<span class="token function">summary_table</span>()
+    <span class="token function">print</span>(<span class="token string">"\\nBootstrap Tests Summary:"</span>)
+    <span class="token function">print</span>(table.<span class="token function">to_string</span>(index<span class="token operator">=</span><span class="token keyword">False</span>))
+
+<span class="token comment"># Final decision</span>
+<span class="token function">print</span>(<span class="token string">"\\n"</span> <span class="token operator">+</span> <span class="token string">"="</span> <span class="token operator">*</span> <span class="token number">50</span>)
+<span class="token function">print</span>(model.<span class="token function">cointegration_decision</span>())
+
+<span class="token comment"># Compare with standard bounds test</span>
+<span class="token function">print</span>(<span class="token string">"\\nComparison with PSS Bounds Test:"</span>)
+bt <span class="token operator">=</span> model.bounds_test
+<span class="token function">print</span>(<span class="token string">f"  PSS F-statistic: </span>{bt[<span class="token string">'f_statistic'</span>]:.4f}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  PSS Decision: </span>{bt[<span class="token string">'decision'</span>][<span class="token string">'F_5%'</span>]}<span class="token string">"</span>)
+<span class="token function">print</span>(<span class="token string">f"  Bootstrap Decision: </span>{model.bootstrap_results[<span class="token string">'overall'</span>]}<span class="token string">"</span>)</code>
+            </pre>
+
+            <div class="callout callout-warning">
+                <div class="callout-icon">⏱️</div>
+                <div>
+                    <div class="callout-title">Computation Time</div>
+                    <p>Bootstrap tests require more computation time than standard bounds tests. For 1000 replications,
+                        expect several seconds to a minute depending on sample size and model complexity.</p>
+                </div>
+            </div>
+
+            <h2>References</h2>
+            <div class="callout callout-info">
+                <div class="callout-icon">📚</div>
+                <div>
+                    <div class="callout-title">Bertelli, S., Vacca, G., & Zoia, M. (2022)</div>
+                    <p>"Bootstrap cointegration tests in ARDL models." <em>Economic Modelling</em>, 116, 105987. <a
+                            href="https://doi.org/10.1016/j.econmod.2022.105987" target="_blank"
+                            style="color: var(--accent-cyan);">https://doi.org/10.1016/j.econmod.2022.105987</a></p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-left: 280px;">
+        <div class="footer-bottom" style="max-width: 100%; padding: 2rem;">
+            <span>© 2024 NARDL-Fourier. MIT License.</span>
+            <span>Made with ❤️ by <a href="https://github.com/merwanroudane">Dr. Merwan Roudane</a></span>
+        </div>
+    </footer>
+</body>
+
+</html>
